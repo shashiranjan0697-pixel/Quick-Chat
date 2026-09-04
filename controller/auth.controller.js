@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require("../model/user.model");
+const STATUS_CODES = require('../utility/status.utility');
 
 
 const signup = async (req, res) => {
@@ -18,7 +19,7 @@ const signup = async (req, res) => {
 
         const user = await User.create(data);
 
-        res.status(200).json({
+        res.status(STATUS_CODES.SUCCESS.CREATED).json({
             data : user,
             message: "User successfully registered."
         });
@@ -27,7 +28,15 @@ const signup = async (req, res) => {
     }   catch(e) {
         console.log(e);
 
-        res.status(500).json({
+        // duplicate email
+        if (e.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: "User already registered"
+            });
+    }
+
+        res.status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR).json({
             err : e.name,
             message: e.message
         });
