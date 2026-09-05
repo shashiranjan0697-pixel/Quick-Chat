@@ -5,13 +5,13 @@ const userController = require("../controller/user.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 
 router.get("/:id", 
-        userController.getUserById);
+        userController.getUserById
+    );
 
-// router.put("/update",
-//         authMiddleware.isAuthnticated,
-//         authMiddleware.validateSignup,
-//         userController.updateUserId
-//     );
+router.get("/",
+        authMiddleware.isAuthnticated,
+        userController.getAll
+    );
 
 router.patch("/update",
         authMiddleware.isAuthnticated,
