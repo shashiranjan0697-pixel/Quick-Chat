@@ -40,40 +40,6 @@ const getUserById = async (req, res) =>{
 }
 
 
-// const updateUserId = async (req, res) =>{
-//     try{
-
-//         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-//         const user = await User.findByIdAndUpdate(
-//             req.user,
-//             {
-//                 firstName: req.body.firstName,
-//                 lastName: req.body.lastName,
-//                 email: req.body.email,
-//                 password: hashedPassword,
-//                 profilePic: req.body.profilePic
-//             },
-//             {
-//                 new: true
-//             }
-//         );
-
-//         RESPONSE.SUCCESS.data = user;
-//         RESPONSE.SUCCESS.message = "user successfully updated";
-//         res.status(STATUS_CODES.SUCCESS.ACCEPTED).json(RESPONSE.SUCCESS)
-
-//     }   catch(e) {
-
-//         console.log(e);
-
-//         res.status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR).json({
-//             err : e.name,
-//             message: e.message
-//         });
-
-//     }
-// }
 
 
 const updateUser = async (req, res) =>{
@@ -119,8 +85,40 @@ const updateUser = async (req, res) =>{
     }
 }
 
+const getAll = async (req, res) => {
+    try{
+
+        const users = await User.find({});
+
+        const finalUser = users.filter((user) =>{
+            return user.id != req.user;
+        });
+
+        if(finalUser.length === 0) {
+            RESPONSE.SUCCESS.message = "No User found";
+            return res.status(STATUS_CODES.SUCCESS.OK).json(RESPONSE.SUCCESS);
+        }
+
+        RESPONSE.SUCCESS.data = finalUser;
+        RESPONSE.SUCCESS.message = "All user successfully fetched";
+        res.status(STATUS_CODES.SUCCESS.ACCEPTED).json(RESPONSE.SUCCESS);
+
+
+    }   catch (e) {
+
+        console.log(e);
+
+        res.status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR).json({
+            err : e.name,
+            message: e.message
+        });
+
+    }
+}
+
 
 module.exports = {
     getUserById,
-    updateUser
+    updateUser,
+    getAll
 }
