@@ -5,6 +5,7 @@ const express = require("express");
 require("dotenv").config();
 
 const authRoute = require("./route/auth.route")
+const userRoute = require("./route/user.route");
 
 const connectDB = require("./config/database");
 
@@ -19,9 +20,10 @@ connectDB();
 
 
 app.use("/QuickChat/api/v1/auth",authRoute);
+app.use("/QuickChat/api/v1/user",userRoute);
 
 
 app.listen(port, () => {
-    console.log(`Server started on port: ${port}`);
+    console.log(`Server started on port : ${port}`);
 }); 
  

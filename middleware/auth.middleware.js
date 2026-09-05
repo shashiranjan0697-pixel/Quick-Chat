@@ -1,4 +1,7 @@
+const jwt = require('jsonwebtoken');
+require("dotenv").config();
 
+const User = require("../model/user.model");
 const STATUS_CODES = require("../utility/status.utility")
 const RESPONSE = require("../utility/response.utility")
 
@@ -62,7 +65,42 @@ const validateSignIn =async (req, res, next) =>{
 next();
 }
 
+
+const isAuthnticated = async (req, res, next) =>{
+    try{
+        
+        const token = req.headers["token"];
+
+        if(!token){
+            RESPONSE.FAILURE.err= "Token not provided";
+            return res.status(STATUS_CODES.CLIENT_ERROR.BAD_REQUEST).json(RESPONSE.FAILURE);
+        }
+
+        const response = jwt.verify(token, process.env.AUTH_KEY);
+
+        const user = await User.findById(response.id);
+
+        if (!user) {
+            RESPONSE.FAILURE.err = "User not found";
+            return res.status(STATUS_CODES.CLIENT_ERROR.NOT_FOUND).json(RESPONSE.FAILURE);
+        }
+
+        req.user = response.id; 
+
+        next();
+
+    }   catch (e) {
+
+        errorRes.err = e.message;
+        errorRes.message= "Invalid Token";
+        return res.status(401).send(errorRes);
+
+    }
+
+}
+
 module.exports = {
     validateSignup,
-    validateSignIn
+    validateSignIn,
+    isAuthnticated
 }
