@@ -40,6 +40,29 @@ next();
 }
 
 
+const validateSignIn =async (req, res, next) =>{
+    
+
+    if (!req.body.email) {
+        RESPONSE.FAILURE.err = "BAD REQUEST";
+        RESPONSE.FAILURE.message =  "Please Enter Email";
+        return res
+            .status(STATUS_CODES.CLIENT_ERROR.BAD_REQUEST)
+            .json(RESPONSE.FAILURE);
+    }
+
+    if (!req.body.password) {
+        RESPONSE.FAILURE.err = "BAD REQUEST";
+        RESPONSE.FAILURE.message = "Please Enter Password";
+        return res
+            .status(STATUS_CODES.CLIENT_ERROR.BAD_REQUEST)
+            .json(RESPONSE.FAILURE);
+    }
+
+next();
+}
+
 module.exports = {
     validateSignup,
+    validateSignIn
 }
