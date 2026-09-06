@@ -39,7 +39,7 @@ const signup = async (req, res) => {
                 success: false,
                 message: "User already registered"
             });
-    }
+        }
 
         res.status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR).json({
             err : e.name,

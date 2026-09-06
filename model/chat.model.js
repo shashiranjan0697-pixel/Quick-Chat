@@ -6,13 +6,13 @@ const chatSchema = new mongoose.Schema({
         type : [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref : "User"
+                ref : "User",
             }
         ]
     },
-    lastMessage : {
+    lastMessage: {
         type: mongoose.Schema.Types.ObjectId,
-        ref : "User" 
+        ref: "Message",
     },
     unreadMessageCount : {
         type : Number,
