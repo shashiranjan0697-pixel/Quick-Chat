@@ -12,6 +12,6 @@ const RESPONSE = {
         err:"",
         message:"",
     }
-}
+} 
 
 module.exports = RESPONSE;
