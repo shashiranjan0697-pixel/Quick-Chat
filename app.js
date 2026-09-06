@@ -6,6 +6,7 @@ require("dotenv").config();
 
 const authRoute = require("./route/auth.route")
 const userRoute = require("./route/user.route");
+const chatRoute = require("./route/chat.route");
 
 const connectDB = require("./config/database");
 
@@ -21,6 +22,7 @@ connectDB();
 
 app.use("/QuickChat/api/v1/auth",authRoute);
 app.use("/QuickChat/api/v1/user",userRoute);
+app.use("/QuickChat/api/v1/chat",chatRoute);
 
 
 app.listen(port, () => {
