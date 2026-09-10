@@ -54,7 +54,7 @@ const signin = async (req, res) => {
         
         const user = await User.findOne({
             email: req.body.email
-        });
+        }).select("+password");
 
         if(!user) {
             RESPONSE.FAILURE.err = "Invalid email";

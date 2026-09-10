@@ -11,5 +11,10 @@ router.post("/create",
         chatController.createChat
     );
 
+router.get("/all",
+        authMiddleware.isAuthnticated,
+        chatController.getAllChat
+    );
+
 
 module.exports = router;
