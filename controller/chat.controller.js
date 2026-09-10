@@ -58,7 +58,17 @@ const getAllChat = async (req, res) => {
             member: req.user
         })
         .populate("member")
-        // .populate("lastMessage");
+        .populate("lastMessage");
+
+        if(!chats) {
+            RESPONSE.FAILURE.err = "BAD REQUEST";
+            RESPONSE.FAILURE.message =
+                "No chat found with given id.";
+
+            return res
+                .status(STATUS_CODES.CLIENT_ERROR.NOT_FOUND)
+                .json(RESPONSE.FAILURE);
+        }
 
         return res.status(STATUS_CODES.SUCCESS.OK).json({
             data: chats,
@@ -78,7 +88,44 @@ const getAllChat = async (req, res) => {
 };
 
 
+const getById = async (req, res) =>{
+    try{
+
+        const chat = await Chat.findById(req.params.id)
+            .populate("member")
+            .populate("lastMessage");
+
+        if(!chat) {
+            RESPONSE.FAILURE.err = "BAD REQUEST";
+            RESPONSE.FAILURE.message =
+                "No chat found with given id.";
+
+            return res
+                .status(STATUS_CODES.CLIENT_ERROR.NOT_FOUND)
+                .json(RESPONSE.FAILURE);
+        }
+
+        return res.status(STATUS_CODES.SUCCESS.OK).json({
+            data: chat,
+            message: "All chats successfully fetched"
+        });
+
+    }   catch (e) {
+        console.log(e);
+
+        return res
+            .status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+            .json({
+                err: e.name,
+                message: e.message
+            });
+
+    }
+}
+
+
 module.exports = {
     createChat, 
-    getAllChat
+    getAllChat,
+    getById
 }

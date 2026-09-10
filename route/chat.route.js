@@ -16,5 +16,10 @@ router.get("/all",
         chatController.getAllChat
     );
 
+router.get("/:id",
+        authMiddleware.isAuthnticated,
+        chatMiddleware.validateId,
+        chatController.getById
+    );
 
 module.exports = router;
