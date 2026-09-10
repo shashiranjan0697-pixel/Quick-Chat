@@ -78,7 +78,34 @@ const getAllChat = async (req, res) => {
 };
 
 
+const getById = async (req, res) =>{
+    try{
+
+        const chat = await Chat.findById(req.params.id)
+            .populate("member")
+            .populate("lastMessage");
+
+        return res.status(STATUS_CODES.SUCCESS.OK).json({
+            data: chat,
+            message: "All chats successfully fetched"
+        });
+
+    }   catch (e) {
+        console.log(e);
+
+        return res
+            .status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+            .json({
+                err: e.name,
+                message: e.message
+            });
+
+    }
+}
+
+
 module.exports = {
     createChat, 
-    getAllChat
+    getAllChat,
+    getById
 }
