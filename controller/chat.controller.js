@@ -3,42 +3,82 @@ const STATUS_CODES = require('../utility/status.utility');
 const RESPONSE = require("../utility/response.utility");
 
 const createChat = async (req, res) => {
-    try{
-        const { member } = req.body;
+    try {
 
-        const members = [...new Set([
-            ...member.map(id => id.toString()),
-            req.user
-        ])];
+        const oldChat = await Chat.find({});
 
-        const chat = await Chat.create({
-            member: members
-        });
+        const isChatExist = oldChat.some((chat) =>
+            chat.member.includes(req.body.member[0]) &&
+            chat.member.includes(req.user.toString()) &&
+            chat.member.length === 2
+        );
 
-        RESPONSE.SUCCESS.data = chat;
-        RESPONSE.SUCCESS.message = "Chat successfully Created.";
-        res.status(STATUS_CODES.SUCCESS.CREATED).json(RESPONSE.SUCCESS);
+        if(isChatExist) {
+            RESPONSE.FAILURE.err = "BAD REQUEST";
+            RESPONSE.FAILURE.message =
+                "Old chat with this member already exists.";
 
-    }   catch(e) {
-
-            console.log(e);
-
-            // duplicate chat
-            if (e.code === 11000) {
-                return res.status(409).json({
-                    success: false,
-                    message: "Chat with this member already exist."
-                });
-            }
+            return res
+                .status(STATUS_CODES.CLIENT_ERROR.CONFLICT)
+                .json(RESPONSE.FAILURE);
+        }
         
-            res.status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR).json({
-                err : e.name,
+        console.log("OldChat : ", oldChat);
+
+
+        req.body.member = [...req.body.member, req.user];
+
+        const newChat = await Chat.create(req.body);
+
+        RESPONSE.SUCCESS.data = newChat;
+        RESPONSE.SUCCESS.message = "Chat successfully created.";
+
+        return res
+            .status(STATUS_CODES.SUCCESS.CREATED)
+            .json(RESPONSE.SUCCESS);
+
+    } catch (e) {
+
+        console.log(e);
+
+        return res
+            .status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+            .json({
+                err: e.name,
                 message: e.message
             });
-
     }
-}
+};
+
+
+
+const getAllChat = async (req, res) => {
+    try {
+        const chats = await Chat.find({
+            member: req.user
+        })
+        .populate("member")
+        // .populate("lastMessage");
+
+        return res.status(STATUS_CODES.SUCCESS.OK).json({
+            data: chats,
+            message: "All chats successfully fetched"
+        });
+
+    } catch (e) {
+        console.log(e);
+
+        return res
+            .status(STATUS_CODES.SERVER_ERROR.INTERNAL_SERVER_ERROR)
+            .json({
+                err: e.name,
+                message: e.message
+            });
+    }
+};
+
 
 module.exports = {
-    createChat
+    createChat, 
+    getAllChat
 }
